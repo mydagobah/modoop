@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Ant build file
+ -->
+
+<project name="modoop" default="dist" basedir="." >
+
+  <description>
+    Hadoop Map-reduce on Mongo Demo
+  </description>
+
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="classes" location="${build}/classes"/>
+  <property name="resources" location="${src}/resources"/>
+  <property name="version.num" value="0.1"/>
+  <property name="project.name" value="modoop"/>
+  <property name="build.jar" location="${build}/${project.name}.jar"/>
+
+  <!-- Java compile classpath -->
+  <path id="classpath">
+    <pathelement location="lib/hadoop-mapreduce-client-core-2.4.0.jar"/>
+    <pathelement location="lib/hadoop-mapreduce-client-common-2.4.0.jar"/>
+    <pathelement location="lib/hadoop-common-2.4.0.jar"/>
+    <pathelement location="lib/mongo-hadoop-core.jar"/>
+    <pathelement location="lib/mongo-hadoop-streaming.jar"/>
+    <pathelement location="lib/mongo-java-driver.jar"/>
+    <pathelement location="lib/commons-logging-1.1.3.jar"/>
+  </path>
+
+  <buildnumber file="build.num"/>
+
+  <!-- Initialize the build and create the directory -->
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp>
+      <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+    </tstamp>
+    <!-- Make the directory -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${classes}"/>
+  </target>
+
+  <!-- Compile the java code from ${src} into ${build} -->
+  <target name="compile" depends="init" description="compile the source code">
+    <javac srcdir="${src}" destdir="${classes}" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!-- Create the distribution directory -->
+  <target name="dist" depends="compile" description="generate the distribution" >
+    <manifest file="MANIFEST.MF">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Main-Class" value="main.Entry"/>
+      <attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+      <attribute name="Built-Date" value="${TODAY}"/>
+    </manifest>
+    <jar jarfile="${build.jar}" manifest="MANIFEST.MF">
+      <fileset dir="${classes}" includes="**"/>
+      <fileset dir="${resources}" includes="*"/>
+    </jar>
+  </target>
+
+  <!-- Delete the ${build} and ${dist} directory trees -->
+  <target name="clean" description="clean up" >
+    <delete dir="${build}"/>
+    <delete file="MANIFEST.MF"/>
+  </target>
+
+</project>
