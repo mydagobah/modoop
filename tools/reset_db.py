@@ -2,7 +2,6 @@
 
 from pymongo import Connection
 from random import randint
-#from datetime import datetime
 
 conn = Connection()
 db = conn.modoop
@@ -14,7 +13,7 @@ collection_in.drop()
 collection_out.drop()
 
 #
-size = 10000
+size = 1000000
 for i in range(0, size):
     doc = {}
     doc['list'] = 'list' + str(randint(0, 10))
